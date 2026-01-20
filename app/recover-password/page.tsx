@@ -141,12 +141,51 @@ const Page = () => {
                       </button>
                     </div>
 
-                   
-                    <Link href="/" className="w-full bg-primary-600 text-center text-white py-2 rounded-lg hover:bg-primary-700 transition duration-300 cursor-pointer">
+                    <button
+                      className="w-full bg-primary-600 text-center text-white py-2 rounded-lg hover:bg-primary-700 transition duration-300 cursor-pointer"
+                      onClick={() => setActive("success")}
+                    >
                       Change Password
-                    </Link>
+                    </button>
                   </div>
                 </form>
+              </div>
+              <div className="text-center w-[70%]">
+                <p className="text-xs text-gray-400 mt-20">
+                  CELZ4 Copyright@{year}. All rights Reserved
+                </p>
+              </div>
+            </div>
+          )}
+          {active === "success" && (
+            <div className="text-left w-1/2 text-gray-900 pl-16">
+              <div className="mb-10">
+                <h1 className="text-2xl font-bold mb-3">Logo</h1>
+              </div>
+              <div className="w-[70%] flex justify-center items-center p-5">
+                <Image
+                  src={"/images/success.png"}
+                  width={350}
+                  height={350}
+                  alt="success check"
+                />
+              </div>
+
+              <div className={"text-center w-[70%]"}>
+                <h1 className=" text-2xl font-bold">
+                  Reset Successfully done!
+                </h1>
+                <p className="my-4 text-sm text-gray-400">
+                  Yippe!. You have successfully set a new password..
+                </p>
+                <div className="w-full">
+                  <Link
+                    href="/"
+                    className="w-full bg-primary-600 text-center text-white py-2 px-50 rounded-lg hover:bg-primary-700 transition duration-300 cursor-pointer mt-10"
+                  >
+                    Close
+                  </Link>
+                </div>
               </div>
               <div className="text-center w-[70%]">
                 <p className="text-xs text-gray-400 mt-20">
