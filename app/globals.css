@@ -154,3 +154,53 @@ body {
 
 }
 
+
+
+/* DataTables sorting indicators */
+table.dataTable thead th {
+  @apply cursor-pointer select-none relative pr-6;
+}
+/* 1. Kill all DataTables default icons completely */
+table.dataTable thead th::before,
+table.dataTable thead th::after {
+  content: none !important;
+}
+
+/* 2. Base sortable header */
+table.dataTable thead th.dt-orderable {
+  position: relative;
+  padding-right: 2rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* 3. Unsorted */
+table.dataTable thead th.dt-orderable:not(.dt-orderable-asc):not(.dt-orderable-desc)::after {
+  content: "⇅" !important;
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0.4;
+  font-size: 0.75rem;
+}
+
+/* 4. Ascending */
+table.dataTable thead th.dt-orderable-asc::after {
+  content: "↑" !important;
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 1;
+}
+
+/* 5. Descending */
+table.dataTable thead th.dt-orderable-desc::after {
+  content: "↑↓" !important;
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 1;
+}

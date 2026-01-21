@@ -63,12 +63,12 @@ const Page = () => {
                       <p>Forgot password?</p>
                     </Link>
                   </div>
-                  <button
-                    type="submit"
-                    className="w-full bg-primary-600 text-white py-2 rounded-lg hover:bg-primary-700 transition duration-300 cursor-pointer"
+                  <Link href={'/dashboard'}
+                   
+                    className="w-full bg-primary-600 text-white text-center py-2 rounded-lg hover:bg-primary-700 transition duration-300 cursor-pointer"
                   >
                     Sign In
-                  </button>
+                  </Link>
                   <div>
                     <p className="text-sm text-[#2A2C2CA6] mt-4 text-center font-light">
                       Don&apos;t have an account?{" "}

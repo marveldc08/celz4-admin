@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Lato } from "next/font/google";
+import { ToastContainer } from "react-toastify";
 import "./globals.css";
 
 const lato = Lato({
@@ -20,9 +21,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${lato.variable} antialiased`}
-      >
+      <body className={`${lato.variable} antialiased `}>
+        <ToastContainer position="top-right" autoClose={3000} />
         {children}
       </body>
     </html>

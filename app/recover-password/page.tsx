@@ -2,7 +2,7 @@
 import { AtSign, Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 
 import VerifyCode from "@/components/VerifyCode";
 import Link from "next/link";
@@ -12,7 +12,7 @@ const Page = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [active, setActive] = useState("submit");
-    const router = useRouter();
+    // const router = useRouter();
   
   return (
     <div>
