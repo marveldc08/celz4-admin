@@ -12,7 +12,7 @@ export default function SideNav() {
   ];
 
   return (
-    <aside className="w-64 bg-[#1e2b5b] text-white p-6 hidden lg:block">
+    <aside className="w-64 bg-[#1e2b5b] text-white p-6 hidden lg:block rounded-t-lg mt-3">
       <div className="text-xl font-bold mb-10">logo</div>
       <nav className="space-y-2">
         {items.map((item) => (

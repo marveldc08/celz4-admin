@@ -10,7 +10,7 @@ export default function Footer() {
   if (pathname === "/") return null;
 
   return (
-    <footer className="w-full border-t bg-gray-50 dark:bg-gray-900 dark:border-gray-800 mt-10">
+    <footer className="w-full border-t border-t-gray-200 bg-gray-50 dark:bg-gray-900 dark:border-gray-800 mt-10">
       <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between px-4 py-4 text-sm text-gray-600 dark:text-gray-400">
         <p className="text-center sm:text-left">
           © {new Date().getFullYear()} CELZ4. All rights reserved.
