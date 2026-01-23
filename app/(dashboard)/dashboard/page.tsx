@@ -5,7 +5,7 @@ import {Download, UploadCloud, Search, Users, ChevronUp, Share, Pen, Trash, Eye}
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { UsersTable } from "@/components/UsersTable";
-import { useState } from "react";
+
 
 
 type User = {
@@ -37,7 +37,7 @@ export default function DashboardPage() {
 
      const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
      const hours = ["12am", "1am", "2am"];
-     const [date] = useState("November 20, 2025");
+  
 
 
 
