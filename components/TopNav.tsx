@@ -2,14 +2,12 @@ import { Bell, Search, CirclePlus, Calendar } from "lucide-react";
 import Image from "next/image";
 import React from "react";
 
-
-
 export default function TopNav() {
   return (
     <header className="flex items-center justify-between px-6 py-4 z-20 bg-white  shadow-md">
-      <h1 className="text-sm text-[#717171] font-light">
+      <h1 className="text-md text-[#717171] font-light">
         Welcome,{" "}
-        <span className="text-md text-[#262626] font-semibold">Josh</span>
+        <span className="text-lg text-[#262626] font-semibold">Josh</span>
       </h1>
       <div className="flex items-center gap-4">
         <div className="relative">
