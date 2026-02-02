@@ -5,7 +5,6 @@ import {
   UploadCloud,
   Eye,
   MoreHorizontal,
-  Pen,
   Search,
   Trash,
   Users,
@@ -15,6 +14,10 @@ import {
   FileText,
   Square,
   Link2,
+  Calendar,
+  CircleCheckBig,
+  CircleAlert,
+  Copy,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
@@ -40,6 +43,27 @@ import { toast } from "react-toastify";
 import Image from "next/image";
 import $ from "jquery";
 import "datatables.net-dt";
+import Jumbo from "@/components/Jumbo";
+
+type User = {
+  name: string;
+  email: string;
+  role: string;
+  joinedDate: string;
+  lastLogin: string;
+  status: string;
+  image: string;
+};
+
+type Log = {
+  id: string;
+  user: string;
+  severity: "high" | "low";
+  date: string;
+  time: string;
+  ipAddress: string;
+  message: string;
+};
 
 const Page = () => {
   const path = usePathname();
@@ -47,6 +71,8 @@ const Page = () => {
   const [openCreateUserModal, setOpenCreateUserModal] = useState(false);
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("");
+  const [openEditAccess, setOpenEditAccess] = useState(false);
+  const [openDeleteUser, setOpenDeleteUser] = useState(false);
 
   const tabs = [
     { name: "All Users", icon: <Users size={18} /> },
@@ -66,6 +92,19 @@ const Page = () => {
     image: "/images/profile.png",
   }));
 
+  const mockLogs: Log[] = Array.from({ length: 15 }).map((_, i) => ({
+    id: `LOG-00${i + 1}`,
+    user: "Olamide bab",
+    severity: i % 3 === 0 ? "high" : "low",
+    date: "02 Feb, 2026",
+    time: "12:00 PM",
+    ipAddress: "192.168.1.1",
+    message:
+      i % 2 === 0
+        ? "User logged in successfully"
+        : "Failed login attempt detected",
+  }));
+
   return (
     <div className="flex min-h-screen px-7 py-10 w-full bg-white">
       <div className="flex flex-col w-full">
@@ -80,17 +119,19 @@ const Page = () => {
               {path.split("/").pop()}
             </h2>
           </div>
-          <div className="flex gap-4 items-center">
-            <button
-              onClick={() => setOpenCreateUserModal(true)}
-              className="flex justify-center cursor-pointer items-center gap-2 px-6 py-3 border border-[#F5F5F5] rounded-lg bg-[#202C5E] text-white text-xs font-medium transition-all hover:bg-[#1a244d]"
-            >
-              <PlusCircle className="w-4 h-4" /> Add New User
-            </button>
-            <button className="flex justify-center cursor-pointer items-center gap-2 px-6 py-3 rounded-lg bg-[#FAFAFA] text-xs text-gray-700 border border-gray-200 hover:bg-gray-100 transition-all">
-              <UploadCloud className="w-4 h-4" /> Export as CSV
-            </button>
-          </div>
+          {activeTab === "All Users" && (
+            <div className="flex gap-4 items-center">
+              <button
+                onClick={() => setOpenCreateUserModal(true)}
+                className="flex justify-center cursor-pointer items-center gap-2 px-6 py-3 border border-[#F5F5F5] rounded-lg bg-[#202C5E] text-white text-xs font-medium transition-all hover:bg-[#1a244d]"
+              >
+                <PlusCircle className="w-4 h-4" /> Add New User
+              </button>
+              <button className="flex justify-center cursor-pointer items-center gap-2 px-6 py-3 rounded-lg bg-[#FAFAFA] text-xs text-gray-700 border border-gray-200 hover:bg-gray-100 transition-all">
+                <UploadCloud className="w-4 h-4" /> Export as CSV
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Content Area with Vertical Tabs */}
@@ -114,18 +155,154 @@ const Page = () => {
           </div>
 
           {/* Main Content (Table) */}
-          <div className="flex-1 bg-[#FAFAFA] rounded-xl overflow-hidden min-h-[600px]">
-            {activeTab === "All Users" ? (
-              <UsersTable data={userData} />
-            ) : (
-              <div className="flex flex-col items-center justify-center h-full text-gray-400">
-                <div className="p-4 bg-white rounded-full mb-4 shadow-sm text-[#334797]">
-                  {tabs.find((t) => t.name === activeTab)?.icon}
+          <div className="flex-1 bg-[#ffffff] rounded-xl overflow-hidden min-h-[600px]">
+            {activeTab === "All Users" && <UsersTable data={userData} />}
+            {activeTab === "Accounts" && (
+              <div>
+                <Jumbo
+                  hasButton={true}
+                  openEditAccess={openEditAccess}
+                  openDeleteUser={openDeleteUser}
+                  setOpenEditAccess={setOpenEditAccess}
+                  setOpenDeleteUser={setOpenDeleteUser}
+                />
+                <div className="flex flex-col justify-center items-start w-full mt-15">
+                  <div className="flex flex-col text-start border-b border-b-gray-200 w-full mb-5 pb-1">
+                    <h3 className="font-semibold text-[#262626]">Profile</h3>
+                    <p className="text-[#525252] text-sm">User information</p>
+                  </div>
+                  <div className="flex flex-col text-start border-b border-b-gray-200 pb-4 w-full gap-5">
+                    <div className="flex justify-start items-center gap-2  pb-2">
+                      <p className="font-semibold">Full-name:</p>
+                      <p className="text-[#525252] text-sm"> Olamide bab</p>
+                    </div>
+                    <div className="flex justify-start items-center gap-2 pb-2">
+                      <p className="font-semibold">Email:</p>
+                      <p className="text-[#525252] text-sm">
+                        {" "}
+                        Olamide jane@gmail.com{" "}
+                      </p>
+                      <div className="rounded-lg border border-[#F59E08] text-[#F59E08] text-sm bg-[#FEF3C7] p-2 text-center">
+                        Pending Verification
+                      </div>
+                    </div>
+                    <div className="flex justify-start items-center gap-2 pb-2">
+                      <p className="font-semibold">Role:</p>
+                      <p className="text-[#525252] text-sm">Admin</p>
+                    </div>
+                    <div className="flex justify-start items-center gap-2 pb-2">
+                      <p className="font-semibold">Status:</p>
+                      <p className="text-[#525252] flex justify-center items-center gap-2 text-sm">
+                        {" "}
+                        <span className="rounded-full bg-green-700 p-1 w-3 h-3"></span>{" "}
+                        Active
+                      </p>
+                    </div>
+                    <div className="flex justify-start items-center gap-2 pb-2">
+                      <p className="font-semibold">Last Sign In:</p>
+                      <p className="text-[#525252] text-sm">Newly Created</p>
+                    </div>
+                  </div>
+                  <div className="flex flex-col text-start w-full mt-5 pb-1">
+                    <h3 className="font-semibold text-[#262626] pb-1">
+                      Delete Account
+                    </h3>
+                    <p className="text-[#525252] pb-1 text-sm">
+                      This action will permanently delete the user and all
+                      related data. It cannot be undone.
+                    </p>
+                    <button
+                      className="flex justify-center items-center rounded-lg text-white text-xs bg-[#EF4444] px-2 py-3 mt-2 gap-2 w-[20%] text-center cursor-pointer hover:bg-[#dc2626] transition-all"
+                      onClick={() => setOpenDeleteUser(true)}
+                    >
+                      <Trash className="h-4 w-4" />
+                      Delete User Account
+                    </button>
+                  </div>
                 </div>
-                <h3 className="text-lg font-medium text-gray-900">
-                  {activeTab} content
-                </h3>
-                <p>This section is currently under development.</p>
+              </div>
+            )}
+            {activeTab === "Logs" && (
+              <div>
+                <Jumbo
+                  hasButton={false}
+                  openEditAccess={false}
+                  openDeleteUser={false}
+                  setOpenEditAccess={setOpenEditAccess}
+                  setOpenDeleteUser={setOpenDeleteUser}
+                />
+                <div className="flex flex-col justify-center items-start w-full mt-15">
+                  <div className="flex flex-col text-start border-b border-b-gray-200 w-full mb-5 pb-1">
+                    <h3 className="font-semibold text-[#262626]">
+                      Activity logs
+                    </h3>
+                    <p className="text-[#525252] text-sm">
+                      User logins and logout history
+                    </p>
+                  </div>
+                  <div className="flex flex-col text-start py-4 w-full gap-5">
+                    <div className="flex items-center justify-between gap-5">
+                      <div className="w-[50%] rounded-lg bg-[#334797] p-2 flex items-center justify-between py-3 px-10">
+                        <div>
+                          <p className="text-white">Number of logins</p>
+                          <p className="text-white text-2xl font-semibold flex items-center gap-2">
+                            12{" "}
+                            <span className="text-xs text-[#C3A253]">00%</span>
+                          </p>
+                        </div>
+                        <div>
+                          <Image
+                            src="/images/chart.png"
+                            alt="chart"
+                            width={100}
+                            height={100}
+                          />
+                        </div>
+                      </div>
+                      <div className="w-[50%] rounded-lg bg-linear-to-r from-[#FFFFFF] to-[#e3e6ef] border border-[#e6e8eb] py-3 px-10 flex items-center justify-between">
+                        <div>
+                          <p>Failed Attempts</p>
+                          <p className="text-black text-2xl font-semibold">
+                            30
+                          </p>
+                        </div>
+                        <div>
+                          <Image
+                            src="/images/bars.png"
+                            alt="chart"
+                            width={100}
+                            height={100}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="relative cursor-pointer flex justify-end items-center">
+                      <Calendar className="absolute right-37 top-4 w-4 h-4" />
+                      <select
+                        name="month"
+                        id="month"
+                        className="flex justify-center items-center text-sm gap-2 px-9 py-3 outline-0 border cursor-pointer border-gray-200 rounded-lg bg-[#FAFAFA]"
+                      >
+                        <option value="">Select Month</option>
+                        <option value="january">January</option>
+                        <option value="february">February</option>
+                        <option value="march">March</option>
+                        <option value="april">April</option>
+                        <option value="may">May</option>
+                        <option value="june">June</option>
+                        <option value="july">July</option>
+                        <option value="august">August</option>
+                        <option value="september">September</option>
+                        <option value="october">October</option>
+                        <option value="november">November</option>
+                        <option value="december">December</option>
+                      </select>
+                    </div>
+                    <div className="w-full mt-10">
+                      <LogsTable data={mockLogs} />
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
           </div>
@@ -186,21 +363,120 @@ const Page = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <Dialog open={openEditAccess} onOpenChange={setOpenEditAccess}>
+        <DialogContent className=" w-full">
+          <DialogHeader>
+            <DialogTitle>Edit User Access</DialogTitle>
+          </DialogHeader>
+          <div>
+            <form action="" className=" text-sm my-4 px-3">
+              <div className="py-2">
+                <label
+                  htmlFor=""
+                  className="text-[#262626] text-sm font-semibold mb-2"
+                >
+                  Assign Role
+                </label>
+                <select
+                  name=""
+                  id=""
+                  className="bg-[#FAFAFA] w-full outline-none px-8 py-2 rounded-lg border border-[#E5E5E5]"
+                >
+                  <option value="">Select Role</option>
+                  <option value="admin">Admin</option>
+                  <option value="media">Media Team</option>
+                  <option value="pastor">Pastor</option>
+                  <option value="finance">Finance</option>
+                  <option value="support">Support</option>
+                  <option value="security">Security</option>
+                  <option value="">Usher</option>
+                </select>
+              </div>
+              <div className="py-2">
+                <label
+                  htmlFor=""
+                  className="text-[#262626] text-sm font-semibold mb-2"
+                >
+                  Status
+                </label>
+                <select
+                  name=""
+                  id=""
+                  className="bg-[#FAFAFA] w-full outline-none px-8 py-2 rounded-lg border border-[#E5E5E5]"
+                >
+                  <option value="">Select Status</option>
+                  <option value="active">Active</option>
+                  <option value="inactive">Inactive</option>
+                </select>
+              </div>
+            </form>
+          </div>
+          <DialogFooter className="border-t border-[#E5E5E5] p-4">
+            <DialogClose asChild>
+              <Button variant="outline" className="cursor-pointer">
+                Cancel
+              </Button>
+            </DialogClose>
+            <Button
+              className="bg-[#202C5E] text-white cursor-pointer"
+              onClick={() => setOpenEditAccess(false)}
+            >
+              Update Access
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={openDeleteUser} onOpenChange={setOpenDeleteUser}>
+        <DialogContent className=" w-full">
+          <DialogHeader>
+            <DialogTitle>Delete User</DialogTitle>
+            <DialogDescription className="my-1 text-sm">
+              Deleting user{" "}
+              <span className="font-semibold text-[#262626]">
+                Olamideo@gmail.com
+              </span>{" "}
+              will permanently remove the account and all related data. This
+              action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <div>
+            <form action="" className=" text-sm my-1 px-3">
+              <div className="py-2">
+                <label
+                  htmlFor=""
+                  className="text-[#262626] text-sm font-semibold mb-2"
+                >
+                  Confirm the user&apos;s email address
+                </label>
+                <input
+                  type="email"
+                  placeholder="Olamideo@gmail.com"
+                  className="bg-[#FAFAFA] w-full outline-none px-8 py-2 mt-2 rounded-lg border border-[#E5E5E5]"
+                />
+              </div>
+            </form>
+          </div>
+          <DialogFooter className="border-t border-[#E5E5E5] p-4">
+            <DialogClose asChild>
+              <Button variant="outline" className="cursor-pointer">
+                Cancel
+              </Button>
+            </DialogClose>
+            <Button
+              className="bg-[#EF4444] text-white cursor-pointer"
+              onClick={() => setOpenDeleteUser(false)}
+            >
+              Delete User
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
-
 export default Page;
-
-type User = {
-  name: string;
-  email: string;
-  role: string;
-  joinedDate: string;
-  lastLogin: string;
-  status: string;
-  image: string;
-};
 
 type Props = {
   data: User[];
@@ -342,7 +618,7 @@ export function UsersTable({ data }: Props) {
       <div className="overflow-x-auto">
         <table ref={tableRef} className="dataTable w-full text-sm">
           <thead>
-            <tr className="bg-white border-y border-gray-100">
+            <tr className="bg-[#FAFAFA] border-y border-[#F5F5F5]">
               <th className="py-4 px-4 text-left font-semibold text-gray-600 first:rounded-l-lg last:rounded-r-lg">
                 User
               </th>
@@ -368,7 +644,7 @@ export function UsersTable({ data }: Props) {
             {data.map((user, index) => (
               <tr
                 key={index}
-                className="group border-b border-gray-100 hover:bg-white/50 transition-all"
+                className="group border-b border-gray-100 hover:bg-gray-500/10 transition-all"
               >
                 <td className="py-4 px-4">
                   <div className="flex items-center gap-3">
@@ -520,5 +796,166 @@ export function UsersTable({ data }: Props) {
         </div>
       </div>
     </CardContent>
+  );
+}
+
+export function LogsTable({ data }: { data: Log[] }) {
+  const tableRef = useRef<HTMLTableElement | null>(null);
+  const dtInstance = useRef<DataTables.Api | null>(null);
+
+  useEffect(() => {
+    if (!tableRef.current) return;
+
+    const table = $(tableRef.current).DataTable({
+      paging: true,
+      searching: true,
+      ordering: true,
+      pageLength: 10,
+      lengthChange: false,
+      dom: "t",
+      destroy: true,
+    });
+
+    dtInstance.current = table;
+
+    return () => {
+      table.destroy();
+    };
+  }, [data]);
+
+  return (
+    <div className="w-full bg-white py-10 -mt-5 border-t border-t-gray-100">
+      <div className="flex justify-between items-center mb-6">
+        <div className="flex gap-50 justify-between items-center">
+          <div>
+            <h4 className="text-md  text-[#131313]">All Logs</h4>
+          </div>
+          <div className="flex gap-2">
+            <div className="flex gap-2">
+              <div className="relative">
+                <select className="pl-4 pr-10 py-2 bg-[#FAFAFA] border border-[#F5F5F5] rounded-lg text-sm outline-none cursor-pointer appearance-none min-w-[160px]">
+                  <option value="">Bulk Actions</option>
+                  <option value="delete">Delete Selected</option>
+                  <option value="export">Export Selected</option>
+                </select>
+              </div>
+              <button className="px-6 py-2 bg-[#F5F5F5] text-[#4C567E] text-sm rounded-lg transition-all cursor-pointer border border-[#4C567E]">
+                Apply
+              </button>
+            </div>
+            <div className="relative">
+              <Search
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                size={16}
+              />
+              <input
+                type="text"
+                onChange={(e) =>
+                  dtInstance.current?.search(e.target.value).draw()
+                }
+                placeholder="Search logs..."
+                className="pl-10 pr-4 py-2 bg-[#FAFAFA] border border-[#F5F5F5] rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#334797]/20 transition-all w-64"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="overflow-x-auto">
+        <table ref={tableRef} className="dataTable w-full text-sm">
+          <thead>
+            <tr className="bg-[#FAFAFA] border-y border-[#F5F5F5]">
+              <th className="py-4 px-4 text-left font-semibold text-gray-600">
+                ID
+              </th>
+              <th className="py-4 px-4 text-left font-semibold text-gray-600">
+                User
+              </th>
+              <th className="py-4 px-4 text-left font-semibold text-gray-600">
+                Severity
+              </th>
+              <th className="py-4 px-4 text-left font-semibold text-gray-600">
+                Date
+              </th>
+              <th className="py-4 px-4 text-left font-semibold text-gray-600">
+                IP Address
+              </th>
+              <th className="py-4 px-4 text-left font-semibold text-gray-600">
+                Message
+              </th>
+              <th className="py-4 px-4 text-right font-semibold text-gray-600">
+                Action
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.map((log) => (
+              <tr
+                key={log.id}
+                className="border-b border-gray-100 hover:bg-gray-50 transition-all text-sm"
+              >
+                <td className="py-4 px-4 text-[#262626] font-medium">
+                  {log.id}
+                </td>
+                <td className="py-4 px-4 text-[#525252]">{log.user}</td>
+                <td className="py-4 px-4 flex justify-center items-center">
+                  <div className="flex items-center">
+                    <div>
+                      {log.severity === "high" ? (
+                        <CircleAlert className="w-4 h-4 text-red-500" />
+                      ) : (
+                        <CircleCheckBig className="w-4 h-4 text-green-500" />
+                      )}
+                    </div>
+                    {/* <span className="capitalize">{log.severity}</span> */}
+                  </div>
+                </td>
+                <td className="py-4 px-4 text-[#525252]">
+                  {log.date}
+                  <p>{log.time}</p>
+                </td>
+                <td className="py-4 px-4 text-[#334797] font-mono">
+                  {log.ipAddress}
+                </td>
+                <td className="py-4 px-4 text-[#525252]">{log.message}</td>
+                <td className="py-4 px-4 text-right">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button className="p-2 rounded-md transition-all hover:bg-gray-100 text-gray-400 hover:text-gray-600 cursor-pointer">
+                        <MoreHorizontal size={18} />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent
+                      align="end"
+                      className="w-48 bg-white border border-gray-100 p-2 shadow-xl rounded-xl z-50"
+                    >
+                      <DropdownMenuItem className="flex items-center justify-between px-3 py-2 rounded-lg text-sm text-[#262626] hover:bg-[#F5F5F5] hover:text-gray-900 transition-all cursor-pointer">
+                        Select{" "}
+                        <Square
+                          size={14}
+                          className="opacity-60 text-[#262626]"
+                        />
+                      </DropdownMenuItem>
+
+                      <DropdownMenuItem className="flex items-center justify-between px-3 py-2 rounded-lg  hover:bg-[#F5F5F5] text-sm text-[#262626] transition-all cursor-pointer">
+                        Delete{" "}
+                        <Trash
+                          size={14}
+                          className="opacity-60 text-[#262626]"
+                        />
+                      </DropdownMenuItem>
+                      <DropdownMenuItem className="flex items-center justify-between px-3 py-2 rounded-lg text-sm text-[#262626] hover:bg-[#F5F5F5] hover:text-gray-900 transition-all cursor-pointer">
+                        Copy User Id{" "}
+                        <Copy size={14} className="opacity-60 text-[#262626]" />
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
   );
 }
