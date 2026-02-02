@@ -19,6 +19,7 @@ import {
   CircleCheckBig,
   CircleAlert,
   Copy,
+  X,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
@@ -85,6 +86,16 @@ const Page = () => {
   const [role, setRole] = useState("");
   const [openEditAccess, setOpenEditAccess] = useState(false);
   const [openDeleteUser, setOpenDeleteUser] = useState(false);
+  const [openAddRole, setOpenAddRole] = useState(false);
+  const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
+
+  const togglePermission = (permission: string) => {
+    setSelectedPermissions((prev) =>
+      prev.includes(permission)
+        ? prev.filter((p) => p !== permission)
+        : [...prev, permission],
+    );
+  };
 
   const tabs = [
     { name: "All Users", icon: <Users size={18} /> },
@@ -192,7 +203,7 @@ const Page = () => {
           {activeTab === "Roles" && (
             <div className="flex gap-4 items-center">
               <button
-                onClick={() => setOpenCreateUserModal(true)}
+                onClick={() => setOpenAddRole(true)}
                 className="flex justify-center cursor-pointer items-center gap-2 px-6 py-3 border border-[#F5F5F5] rounded-lg bg-[#202C5E] text-white text-xs font-medium transition-all hover:bg-[#1a244d]"
               >
                 <PlusCircle className="w-4 h-4" /> Add Role
@@ -443,6 +454,7 @@ const Page = () => {
         </DialogContent>
       </Dialog>
 
+      {/* Edit user asscess dialog */}
       <Dialog open={openEditAccess} onOpenChange={setOpenEditAccess}>
         <DialogContent className=" w-full">
           <DialogHeader>
@@ -507,6 +519,7 @@ const Page = () => {
         </DialogContent>
       </Dialog>
 
+      {/* Delete User Dialog */}
       <Dialog open={openDeleteUser} onOpenChange={setOpenDeleteUser}>
         <DialogContent className=" w-full">
           <DialogHeader>
@@ -548,6 +561,103 @@ const Page = () => {
               onClick={() => setOpenDeleteUser(false)}
             >
               Delete User
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add Role Dialog */}
+      <Dialog open={openAddRole} onOpenChange={setOpenAddRole}>
+        <DialogContent className=" w-full">
+          <DialogHeader>
+            <DialogTitle className="text-sm">Add Role</DialogTitle>
+          </DialogHeader>
+          <div>
+            <form action="" className=" text-sm my-1 px-3">
+              <div className="py-2">
+                <label htmlFor="" className="text-[#262626] text-sm  mb-2">
+                  Role Name
+                </label>
+                <input
+                  type="text"
+                  className="bg-[#FAFAFA] w-full outline-none px-8 py-2 rounded-lg border border-[#E5E5E5]"
+                />
+              </div>
+              <div className="py-2">
+                <label htmlFor="" className="text-[#262626] text-sm mb-2">
+                  Slug
+                </label>
+                <input
+                  type="text"
+                  placeholder="for example: User-media"
+                  className="bg-[#FAFAFA] w-full outline-none px-8 py-2 rounded-lg border border-[#E5E5E5]"
+                />
+              </div>
+              <div className="py-2">
+                <label htmlFor="" className="text-[#262626] text-sm mb-2">
+                  Permission
+                </label>
+                <div className="flex flex-wrap gap-2 bg-[#FAFAFA] w-full p-2 rounded-lg border border-[#E5E5E5] items-center">
+                  {selectedPermissions.map((perm) => (
+                    <span
+                      key={perm}
+                      className="flex items-center gap-1 px-3 py-1 bg-[#F5F5F5] text-[#525252] rounded-full text-xs font-medium"
+                    >
+                      {perm}
+                      <button
+                        type="button"
+                        onClick={() => togglePermission(perm)}
+                        className="cursor-pointer rounded-full"
+                      >
+                        <X size={12} />
+                      </button>
+                    </span>
+                  ))}
+                  <select
+                    name=""
+                    id=""
+                    value=""
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (val && !selectedPermissions.includes(val)) {
+                        togglePermission(val);
+                      }
+                    }}
+                    className="flex-1 bg-transparent outline-none border-none text-sm min-w-[120px] cursor-pointer"
+                  >
+                    <option value="" disabled hidden className="text-sm">
+                      {selectedPermissions.length > 0
+                        ? " "
+                        : "No Permission assigned by default"}
+                    </option>
+                    {!selectedPermissions.includes("User:create") && (
+                      <option value="User:create">User:create</option>
+                    )}
+                    {!selectedPermissions.includes("User:delete") && (
+                      <option value="User:delete">User:delete</option>
+                    )}
+                    {!selectedPermissions.includes("User:view") && (
+                      <option value="User:view">User:view</option>
+                    )}
+                    {!selectedPermissions.includes("User:edit") && (
+                      <option value="User:edit">User:edit</option>
+                    )}
+                  </select>
+                </div>
+              </div>
+            </form>
+          </div>
+          <DialogFooter className="border-t border-[#E5E5E5] p-4 mt-10">
+            <DialogClose asChild>
+              <Button variant="outline" className="cursor-pointer">
+                Cancel
+              </Button>
+            </DialogClose>
+            <Button
+              className="bg-[#202C5E] text-white cursor-pointer"
+              onClick={() => setOpenAddRole(false)}
+            >
+              Create Role
             </Button>
           </DialogFooter>
         </DialogContent>
