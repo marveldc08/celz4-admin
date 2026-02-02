@@ -5,6 +5,7 @@ import {
   UploadCloud,
   Eye,
   MoreHorizontal,
+  Pen,
   Search,
   Trash,
   Users,
@@ -65,6 +66,17 @@ type Log = {
   message: string;
 };
 
+type RoleData = {
+  id: string;
+  name: string;
+  slug: string;
+  permissions: string[];
+};
+
+type UserProps = {
+  data: User[];
+};
+
 const Page = () => {
   const path = usePathname();
   const [activeTab, setActiveTab] = useState("All Users");
@@ -105,6 +117,51 @@ const Page = () => {
         : "Failed login attempt detected",
   }));
 
+  const mockRoles: RoleData[] = [
+    {
+      id: "1",
+      name: "Admin",
+      slug: "User-Admin",
+      permissions: [
+        "Create-User",
+        "Delete-User",
+        "Edit-User",
+        "View-Logs",
+        "Manage-Roles",
+      ],
+    },
+    {
+      id: "2",
+      name: "Media Team",
+      slug: "User-Media",
+      permissions: ["Create-Media", "Edit-Media", "View-Media"],
+    },
+    {
+      id: "3",
+      name: "Pastor",
+      slug: "User-Pastor",
+      permissions: ["View-Reports", "Manage-Events", "View-Members"],
+    },
+    {
+      id: "4",
+      name: "Support",
+      slug: "User-Support",
+      permissions: ["Manage-Tickets", "View-Users"],
+    },
+    {
+      id: "5",
+      name: "Zone",
+      slug: "User-Zone",
+      permissions: ["Manage-Zone", "View-Zone-Members"],
+    },
+    {
+      id: "6",
+      name: "Member",
+      slug: "User-Member",
+      permissions: ["View-Events", "Edit-Profile"],
+    },
+  ];
+
   return (
     <div className="flex min-h-screen px-7 py-10 w-full bg-white">
       <div className="flex flex-col w-full">
@@ -129,6 +186,16 @@ const Page = () => {
               </button>
               <button className="flex justify-center cursor-pointer items-center gap-2 px-6 py-3 rounded-lg bg-[#FAFAFA] text-xs text-gray-700 border border-gray-200 hover:bg-gray-100 transition-all">
                 <UploadCloud className="w-4 h-4" /> Export as CSV
+              </button>
+            </div>
+          )}
+          {activeTab === "Roles" && (
+            <div className="flex gap-4 items-center">
+              <button
+                onClick={() => setOpenCreateUserModal(true)}
+                className="flex justify-center cursor-pointer items-center gap-2 px-6 py-3 border border-[#F5F5F5] rounded-lg bg-[#202C5E] text-white text-xs font-medium transition-all hover:bg-[#1a244d]"
+              >
+                <PlusCircle className="w-4 h-4" /> Add Role
               </button>
             </div>
           )}
@@ -305,6 +372,18 @@ const Page = () => {
                 </div>
               </div>
             )}
+            {activeTab === "Roles" && (
+              <div className="w-full mb-4">
+                <div className="flex justify-between items-center w-full mb-8 px-2">
+                  <div className="flex items-center">
+                    <h4 className="font-semibold text-gray-900">All Roles</h4>
+                  </div>
+                </div>
+                <div className="w-full">
+                  <RolesTable data={mockRoles} />
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -478,11 +557,7 @@ const Page = () => {
 };
 export default Page;
 
-type Props = {
-  data: User[];
-};
-
-export function UsersTable({ data }: Props) {
+export function UsersTable({ data }: UserProps) {
   const tableRef = useRef<HTMLTableElement | null>(null);
   const dtInstance = useRef<DataTables.Api | null>(null);
 
@@ -799,6 +874,126 @@ export function UsersTable({ data }: Props) {
   );
 }
 
+export function RolesTable({ data }: { data: RoleData[] }) {
+  const tableRef = useRef<HTMLTableElement | null>(null);
+  const dtInstance = useRef<DataTables.Api | null>(null);
+
+  useEffect(() => {
+    if (!tableRef.current) return;
+
+    const table = $(tableRef.current).DataTable({
+      paging: true,
+      searching: true,
+      ordering: true,
+      pageLength: 10,
+      lengthChange: false,
+      dom: "t",
+      destroy: true,
+    });
+
+    dtInstance.current = table;
+
+    return () => {
+      table.destroy();
+    };
+  }, [data]);
+
+  return (
+    <div className="w-full bg-white py-6 border-t border-t-gray-100">
+      <div className="flex justify-end mb-6">
+        <div className="relative">
+          <Search
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+            size={16}
+          />
+          <input
+            type="text"
+            onChange={(e) => dtInstance.current?.search(e.target.value).draw()}
+            placeholder="Search roles..."
+            className="pl-10 pr-4 py-2 bg-[#FAFAFA] border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#334797]/20 transition-all w-64"
+          />
+        </div>
+      </div>
+      <div className="overflow-x-auto">
+        <table ref={tableRef} className="dataTable w-full text-sm">
+          <thead>
+            <tr className="bg-[#FAFAFA] border-y border-[#F5F5F5]">
+              <th className="py-4 px-4 text-left font-semibold text-gray-600">
+                Roles
+              </th>
+              <th className="py-4 px-4 text-left font-semibold text-gray-600">
+                Slug
+              </th>
+              <th className="py-4 px-4 text-left font-semibold text-gray-600">
+                Permission
+              </th>
+              <th className="py-4 px-4 text-right font-semibold text-gray-600">
+                Action
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.map((role) => (
+              <tr
+                key={role.id}
+                className="border-b border-gray-100 hover:bg-gray-50 transition-all text-xs"
+              >
+                <td className="py-4 px-4 text-[#262626] font-medium">
+                  {role.name}
+                </td>
+                <td className="py-4 px-4 rounded-lg text-[#404040]">
+                  <p className="p-2 rounded-lg text-[#404040] border border-[#E5E5E5] text-center">
+                    {role.slug}
+                  </p>
+                </td>
+                <td className="py-4 px-4">
+                  <div className="flex flex-wrap gap-2 max-w-[400px]">
+                    {role.permissions.slice(0, 3).map((perm, idx) => (
+                      <span
+                        key={idx}
+                        className="p-2 rounded-lg text-[#404040] bg-[#F5F5F5] border border-[#E5E5E5] text-center whitespace-nowrap"
+                      >
+                        {perm}
+                      </span>
+                    ))}
+
+                    {role.permissions.length > 3 && (
+                      <span className="p-2  text-[#262626] whitespace-nowrap text-center">
+                        +{role.permissions.length - 3} More
+                      </span>
+                    )}
+                  </div>
+                </td>
+                <td className="py-4 px-4 text-right">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button className="p-2 rounded-md transition-all hover:bg-gray-100 text-gray-400 hover:text-gray-600 cursor-pointer">
+                        <MoreHorizontal size={18} />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent
+                      align="end"
+                      className="w-48 bg-white border border-gray-100 p-2 shadow-xl rounded-xl z-50"
+                    >
+                      <DropdownMenuItem className="flex items-center justify-between px-3 py-2 rounded-lg text-sm text-[#262626] hover:bg-[#F5F5F5] hover:text-gray-900 transition-all cursor-pointer">
+                        Edit Role{" "}
+                        <Pen size={14} className="opacity-60 text-[#262626]" />
+                      </DropdownMenuItem>
+                      <DropdownMenuItem className="flex items-center justify-between px-3 py-2 rounded-lg text-sm text-[#262626] hover:bg-[#f5f5f5] transition-all cursor-pointer">
+                        Delete Role <Trash size={14} className="opacity-60" />
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
 export function LogsTable({ data }: { data: Log[] }) {
   const tableRef = useRef<HTMLTableElement | null>(null);
   const dtInstance = useRef<DataTables.Api | null>(null);
@@ -892,7 +1087,7 @@ export function LogsTable({ data }: { data: Log[] }) {
             {data.map((log) => (
               <tr
                 key={log.id}
-                className="border-b border-gray-100 hover:bg-gray-50 transition-all text-sm"
+                className="border-b border-gray-100 hover:bg-gray-50 transition-all text-xs"
               >
                 <td className="py-4 px-4 text-[#262626] font-medium">
                   {log.id}
