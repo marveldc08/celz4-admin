@@ -73,6 +73,13 @@ type RoleData = {
   slug: string;
   permissions: string[];
 };
+type PermissionData = {
+  id: string;
+  slug: string;
+  permission: string;
+  dateCreated: string;
+  description: string;
+};
 
 type UserProps = {
   data: User[];
@@ -87,6 +94,7 @@ const Page = () => {
   const [openEditAccess, setOpenEditAccess] = useState(false);
   const [openDeleteUser, setOpenDeleteUser] = useState(false);
   const [openAddRole, setOpenAddRole] = useState(false);
+  const [openAddPermission, setOpenAddPermission] = useState(false);
   const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
 
   const togglePermission = (permission: string) => {
@@ -172,6 +180,43 @@ const Page = () => {
       permissions: ["View-Events", "Edit-Profile"],
     },
   ];
+  const mockPermissions: PermissionData[] = [
+    {
+      id: "1",
+      slug: "User-Admin",
+      permission: "Create-User",
+      dateCreated: "09 Nov, 2025 20 :10:00 PM",
+      description: "Permission to edit user details",
+    },
+    {
+      id: "2",
+      slug: "User-Admin",
+      permission: "User-delete",
+      dateCreated: "09 Nov, 2025 20 :10:00 PM",
+      description: "Permission to edit user details",
+    },
+    {
+      id: "3",
+      slug: "User-Admin",
+      permission: "User-add",
+      dateCreated: "09 Nov, 2025 20 :10:00 PM",
+      description: "Permission to edit user details",
+    },
+    {
+      id: "4",
+      slug: "User-Admin",
+      permission: "User-Create",
+      dateCreated: "09 Nov, 2025 20 :10:00 PM",
+      description: "Permission to edit user details",
+    },
+    {
+      id: "5",
+      slug: "User-Admin",
+      permission: "User-edit",
+      dateCreated: "09 Nov, 2025 20 :10:00 PM",
+      description: "Permission to edit user details",
+    },
+  ];
 
   return (
     <div className="flex min-h-screen px-7 py-10 w-full bg-white">
@@ -207,6 +252,16 @@ const Page = () => {
                 className="flex justify-center cursor-pointer items-center gap-2 px-6 py-3 border border-[#F5F5F5] rounded-lg bg-[#202C5E] text-white text-xs font-medium transition-all hover:bg-[#1a244d]"
               >
                 <PlusCircle className="w-4 h-4" /> Add Role
+              </button>
+            </div>
+          )}
+          {activeTab === "Permissions" && (
+            <div className="flex gap-4 items-center">
+              <button
+                onClick={() => setOpenAddPermission(true)}
+                className="flex justify-center cursor-pointer items-center gap-2 px-6 py-3 border border-[#F5F5F5] rounded-lg bg-[#202C5E] text-white text-xs font-medium transition-all hover:bg-[#1a244d]"
+              >
+                <PlusCircle className="w-4 h-4" /> Add Permission
               </button>
             </div>
           )}
@@ -395,6 +450,20 @@ const Page = () => {
                 </div>
               </div>
             )}
+            {activeTab === "Permissions" && (
+              <div className="w-full mb-4">
+                <div className="flex justify-between items-center w-full mb-8 px-2">
+                  <div className="flex items-center">
+                    <h4 className="font-semibold text-gray-900">
+                      All Permissions
+                    </h4>
+                  </div>
+                </div>
+                <div className="w-full">
+                  <PermissionsTable data={mockPermissions} />
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -511,7 +580,10 @@ const Page = () => {
             </DialogClose>
             <Button
               className="bg-[#202C5E] text-white cursor-pointer"
-              onClick={() => setOpenEditAccess(false)}
+              onClick={() => (
+                setOpenEditAccess(false),
+                toast.success("User access updated successfully")
+              )}
             >
               Update Access
             </Button>
@@ -655,9 +727,72 @@ const Page = () => {
             </DialogClose>
             <Button
               className="bg-[#202C5E] text-white cursor-pointer"
-              onClick={() => setOpenAddRole(false)}
+              onClick={() => (
+                setOpenAddRole(false),
+                toast.success("Role was created successfully")
+              )}
             >
               Create Role
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add Permission Dialog */}
+      <Dialog open={openAddPermission} onOpenChange={setOpenAddPermission}>
+        <DialogContent className=" w-full">
+          <DialogHeader>
+            <DialogTitle className="text-sm">Add Permission</DialogTitle>
+          </DialogHeader>
+          <div>
+            <form action="" className=" text-sm my-1 px-3">
+              <div className="py-2">
+                <label htmlFor="" className="text-[#262626] text-sm  mb-2">
+                  Permission Name
+                </label>
+                <input
+                  type="text"
+                  className="bg-[#FAFAFA] w-full outline-none px-8 py-2 rounded-lg border border-[#E5E5E5]"
+                />
+              </div>
+              <div className="py-2">
+                <label htmlFor="" className="text-[#262626] text-sm mb-2">
+                  Slug
+                </label>
+                <input
+                  type="text"
+                  placeholder="for example: User-media"
+                  className="bg-[#FAFAFA] w-full outline-none px-8 py-2 rounded-lg border border-[#E5E5E5]"
+                />
+                <p className="text-[#202C5E] font-semibold text-xs pt-2">
+                  Slug for permission can’t be changed
+                </p>
+              </div>
+              <div className="py-2">
+                <label htmlFor="" className="text-[#262626] text-sm mb-2">
+                  Description
+                </label>
+                <textarea
+                  placeholder="less than 15 words to describe this..."
+                  className="bg-[#FAFAFA] w-full h-30 outline-none px-8 py-2 rounded-lg border border-[#E5E5E5]"
+                />
+              </div>
+            </form>
+          </div>
+          <DialogFooter className="border-t border-[#E5E5E5] p-4 mt-10">
+            <DialogClose asChild>
+              <Button variant="outline" className="cursor-pointer">
+                Cancel
+              </Button>
+            </DialogClose>
+            <Button
+              className="bg-[#202C5E] text-white cursor-pointer"
+              onClick={() => (
+                setOpenAddPermission(false),
+                toast.success("Permission was created successfully")
+              )}
+            >
+              Create Permission
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -987,6 +1122,17 @@ export function UsersTable({ data }: UserProps) {
 export function RolesTable({ data }: { data: RoleData[] }) {
   const tableRef = useRef<HTMLTableElement | null>(null);
   const dtInstance = useRef<DataTables.Api | null>(null);
+  const [openDeleteRoleModal, setOpenDeleteRoleModal] = useState(false);
+  const [openEditRole, setOpenEditRole] = useState(false);
+  const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
+
+  const togglePermission = (permission: string) => {
+    setSelectedPermissions((prev) =>
+      prev.includes(permission)
+        ? prev.filter((p) => p !== permission)
+        : [...prev, permission],
+    );
+  };
 
   useEffect(() => {
     if (!tableRef.current) return;
@@ -1085,11 +1231,17 @@ export function RolesTable({ data }: { data: RoleData[] }) {
                       align="end"
                       className="w-48 bg-white border border-gray-100 p-2 shadow-xl rounded-xl z-50"
                     >
-                      <DropdownMenuItem className="flex items-center justify-between px-3 py-2 rounded-lg text-sm text-[#262626] hover:bg-[#F5F5F5] hover:text-gray-900 transition-all cursor-pointer">
+                      <DropdownMenuItem
+                        className="flex items-center justify-between px-3 py-2 rounded-lg text-sm text-[#262626] hover:bg-[#F5F5F5] hover:text-gray-900 transition-all cursor-pointer"
+                        onClick={() => setOpenEditRole(true)}
+                      >
                         Edit Role{" "}
                         <Pen size={14} className="opacity-60 text-[#262626]" />
                       </DropdownMenuItem>
-                      <DropdownMenuItem className="flex items-center justify-between px-3 py-2 rounded-lg text-sm text-[#262626] hover:bg-[#f5f5f5] transition-all cursor-pointer">
+                      <DropdownMenuItem
+                        className="flex items-center justify-between px-3 py-2 rounded-lg text-sm text-[#262626] hover:bg-[#f5f5f5] transition-all cursor-pointer"
+                        onClick={() => setOpenDeleteRoleModal(true)}
+                      >
                         Delete Role <Trash size={14} className="opacity-60" />
                       </DropdownMenuItem>
                     </DropdownMenuContent>
@@ -1100,6 +1252,362 @@ export function RolesTable({ data }: { data: RoleData[] }) {
           </tbody>
         </table>
       </div>
+      <Dialog open={openDeleteRoleModal} onOpenChange={setOpenDeleteRoleModal}>
+        <DialogContent className="sm:max-w-[400px] border-t-4 border-t-rose-500 rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold text-gray-900">
+              Delete Role?
+            </DialogTitle>
+            <DialogDescription className="py-4 text-gray-500">
+              Are you sure you want to delete this role? This action will remove
+              all associated data and cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+
+          <DialogFooter className="flex gap-3 sm:gap-0">
+            <DialogClose asChild>
+              <Button
+                variant="outline"
+                className="flex-1 sm:flex-none border-gray-200 text-gray-600 hover:bg-gray-50 rounded-lg cursor-pointer mx-2"
+              >
+                Cancel
+              </Button>
+            </DialogClose>
+            <Button
+              className="flex-1 sm:flex-none bg-rose-600 text-white hover:bg-rose-700 rounded-lg transition-all cursor-pointer mx-2"
+              onClick={() => {
+                setOpenDeleteRoleModal(false);
+                toast.success("Role deleted successfully");
+              }}
+            >
+              Delete Role
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={openEditRole} onOpenChange={setOpenEditRole}>
+        <DialogContent className=" w-full">
+          <DialogHeader>
+            <DialogTitle className="text-sm">Edit Role</DialogTitle>
+          </DialogHeader>
+          <div>
+            <form action="" className=" text-sm my-1 px-3">
+              <div className="py-2">
+                <label htmlFor="" className="text-[#262626] text-sm  mb-2">
+                  Role Name
+                </label>
+                <input
+                  type="text"
+                  className="bg-[#FAFAFA] w-full outline-none px-8 py-2 rounded-lg border border-[#E5E5E5]"
+                />
+              </div>
+              <div className="py-2">
+                <label htmlFor="" className="text-[#262626] text-sm mb-2">
+                  Slug
+                </label>
+                <input
+                  type="text"
+                  placeholder="for example: User-media"
+                  className="bg-[#FAFAFA] w-full outline-none px-8 py-2 rounded-lg border border-[#E5E5E5]"
+                />
+              </div>
+              <div className="py-2">
+                <label htmlFor="" className="text-[#262626] text-sm mb-2">
+                  Permission
+                </label>
+                <div className="flex flex-wrap gap-2 bg-[#FAFAFA] w-full p-2 rounded-lg border border-[#E5E5E5] items-center">
+                  {selectedPermissions.map((perm) => (
+                    <span
+                      key={perm}
+                      className="flex items-center gap-1 px-3 py-1 bg-[#F5F5F5] text-[#525252] rounded-full text-xs font-medium"
+                    >
+                      {perm}
+                      <button
+                        type="button"
+                        onClick={() => togglePermission(perm)}
+                        className="cursor-pointer rounded-full"
+                      >
+                        <X size={12} />
+                      </button>
+                    </span>
+                  ))}
+                  <select
+                    name=""
+                    id=""
+                    value=""
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (val && !selectedPermissions.includes(val)) {
+                        togglePermission(val);
+                      }
+                    }}
+                    className="flex-1 bg-transparent outline-none border-none text-sm min-w-[120px] cursor-pointer"
+                  >
+                    <option value="" disabled hidden className="text-sm">
+                      {selectedPermissions.length > 0
+                        ? " "
+                        : "No Permission assigned by default"}
+                    </option>
+                    {!selectedPermissions.includes("User:create") && (
+                      <option value="User:create">User:create</option>
+                    )}
+                    {!selectedPermissions.includes("User:delete") && (
+                      <option value="User:delete">User:delete</option>
+                    )}
+                    {!selectedPermissions.includes("User:view") && (
+                      <option value="User:view">User:view</option>
+                    )}
+                    {!selectedPermissions.includes("User:edit") && (
+                      <option value="User:edit">User:edit</option>
+                    )}
+                  </select>
+                </div>
+              </div>
+            </form>
+          </div>
+          <DialogFooter className="border-t border-[#E5E5E5] p-4 mt-10">
+            <DialogClose asChild>
+              <Button variant="outline" className="cursor-pointer">
+                Cancel
+              </Button>
+            </DialogClose>
+            <Button
+              className="bg-[#202C5E] text-white cursor-pointer"
+              onClick={() => (
+                setOpenEditRole(false),
+                toast.success("Role was updated successfully")
+              )}
+            >
+              Update Role
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
+export function PermissionsTable({ data }: { data: PermissionData[] }) {
+  const tableRef = useRef<HTMLTableElement | null>(null);
+  const dtInstance = useRef<DataTables.Api | null>(null);
+  const [openDeletePermissionModal, setOpenDeletePermissionModal] =
+    useState(false);
+  const [openEditPermission, setOpenEditPermission] = useState(false);
+
+  useEffect(() => {
+    if (!tableRef.current) return;
+
+    const table = $(tableRef.current).DataTable({
+      paging: true,
+      searching: true,
+      ordering: true,
+      pageLength: 10,
+      lengthChange: false,
+      dom: "t",
+      destroy: true,
+    });
+
+    dtInstance.current = table;
+
+    return () => {
+      table.destroy();
+    };
+  }, [data]);
+
+  return (
+    <div className="w-full bg-white py-6 border-t border-t-gray-100">
+      <div className="flex justify-end mb-6">
+        <div className="relative">
+          <Search
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+            size={16}
+          />
+          <input
+            type="text"
+            onChange={(e) => dtInstance.current?.search(e.target.value).draw()}
+            placeholder="Search permissions..."
+            className="pl-10 pr-4 py-2 bg-[#FAFAFA] border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#334797]/20 transition-all w-64"
+          />
+        </div>
+      </div>
+      <div className="overflow-x-auto">
+        <table ref={tableRef} className="dataTable w-full text-sm">
+          <thead>
+            <tr className="bg-[#FAFAFA] border-y border-[#F5F5F5]">
+              <th className="py-4 px-4 text-left font-semibold text-gray-600">
+                ID
+              </th>
+              <th className="py-4 px-4 text-left font-semibold text-gray-600">
+                Slug
+              </th>
+              <th className="py-4 px-4 text-left font-semibold text-gray-600">
+                Permission
+              </th>
+              <th className="py-4 px-4 text-left font-semibold text-gray-600">
+                Date Created
+              </th>
+              <th className="py-4 px-4 text-left font-semibold text-gray-600">
+                Description
+              </th>
+              <th className="py-4 px-4 text-right font-semibold text-gray-600">
+                Action
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.map((permission) => (
+              <tr
+                key={permission.id}
+                className="border-b border-gray-100 hover:bg-gray-50 transition-all text-xs"
+              >
+                <td className="py-4 px-4 text-[#262626] font-medium">
+                  {permission.id}
+                </td>
+                <td className="py-4 px-2 rounded-lg text-[#404040]">
+                  <p className="p-2 rounded-lg text-[#404040] border border-[#E5E5E5] text-center">
+                    {permission.slug}
+                  </p>
+                </td>
+                <td className="py-4 px-4">
+                  <div className="flex flex-wrap gap-2 max-w-[400px]">
+                    {permission.permission}
+                  </div>
+                </td>
+                <td className="py-4 px-4 text-[#262626] font-medium">
+                  {permission.dateCreated}
+                </td>
+                <td className="py-4 px-4 text-[#262626] font-medium">
+                  {permission.description}
+                </td>
+                <td className="py-4 px-4 text-right">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button className="p-2 rounded-md transition-all hover:bg-gray-100 text-gray-400 hover:text-gray-600 cursor-pointer">
+                        <MoreHorizontal size={18} />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent
+                      align="end"
+                      className="w-48 bg-white border border-gray-100 p-2 shadow-xl rounded-xl z-50"
+                    >
+                      <DropdownMenuItem
+                        className="flex items-center justify-between px-3 py-2 rounded-lg text-sm text-[#262626] hover:bg-[#F5F5F5] hover:text-gray-900 transition-all cursor-pointer"
+                        onClick={() => setOpenEditPermission(true)}
+                      >
+                        Edit Permission{" "}
+                        <Pen size={14} className="opacity-60 text-[#262626]" />
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        className="flex items-center justify-between px-3 py-2 rounded-lg text-sm text-[#262626] hover:bg-[#f5f5f5] transition-all cursor-pointer"
+                        onClick={() => setOpenDeletePermissionModal(true)}
+                      >
+                        Delete Permission{" "}
+                        <Trash size={14} className="opacity-60" />
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <Dialog
+        open={openDeletePermissionModal}
+        onOpenChange={setOpenDeletePermissionModal}
+      >
+        <DialogContent className="sm:max-w-[400px] border-t-4 border-t-rose-500 rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold text-gray-900">
+              Delete Permission?
+            </DialogTitle>
+            <DialogDescription className="py-4 text-gray-500">
+              Are you sure you want to delete this permiassion? This action will
+              remove all associated data and cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+
+          <DialogFooter className="flex gap-3 sm:gap-0">
+            <DialogClose asChild>
+              <Button
+                variant="outline"
+                className="flex-1 sm:flex-none border-gray-200 text-gray-600 hover:bg-gray-50 rounded-lg cursor-pointer mx-2"
+              >
+                Cancel
+              </Button>
+            </DialogClose>
+            <Button
+              className="flex-1 sm:flex-none bg-rose-600 text-white hover:bg-rose-700 rounded-lg transition-all cursor-pointer mx-2"
+              onClick={() => {
+                setOpenDeletePermissionModal(false);
+                toast.success("Permission deleted successfully");
+              }}
+            >
+              Delete Permission
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={openEditPermission} onOpenChange={setOpenEditPermission}>
+        <DialogContent className=" w-full">
+          <DialogHeader>
+            <DialogTitle className="text-sm">Edit Permission</DialogTitle>
+          </DialogHeader>
+          <div>
+            <form action="" className=" text-sm my-1 px-3">
+              <div className="py-2">
+                <label htmlFor="" className="text-[#262626] text-sm  mb-2">
+                  Permission Name
+                </label>
+                <input
+                  type="text"
+                  className="bg-[#FAFAFA] w-full outline-none px-8 py-2 rounded-lg border border-[#E5E5E5]"
+                />
+              </div>
+              <div className="py-2">
+                <label htmlFor="" className="text-[#262626] text-sm mb-2">
+                  Slug
+                </label>
+                <input
+                  type="text"
+                  placeholder="for example: User-media"
+                  className="bg-[#FAFAFA] w-full outline-none px-8 py-2 rounded-lg border border-[#E5E5E5]"
+                />
+                <p className="text-[#202C5E] font-semibold text-xs pt-2">
+                  Slug for permission can’t be changed
+                </p>
+              </div>
+              <div className="py-2">
+                <label htmlFor="" className="text-[#262626] text-sm mb-2">
+                  Description
+                </label>
+                <textarea
+                  placeholder="for example: User-media"
+                  className="bg-[#FAFAFA] w-full h-30 outline-none px-8 py-2 rounded-lg border border-[#E5E5E5]"
+                />
+              </div>
+            </form>
+          </div>
+          <DialogFooter className="border-t border-[#E5E5E5] p-4 mt-10">
+            <DialogClose asChild>
+              <Button variant="outline" className="cursor-pointer">
+                Cancel
+              </Button>
+            </DialogClose>
+            <Button
+              className="bg-[#202C5E] text-white cursor-pointer"
+              onClick={() => (
+                setOpenEditPermission(false),
+                toast.success("Permission was updated successfully")
+              )}
+            >
+              Update Permission
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
