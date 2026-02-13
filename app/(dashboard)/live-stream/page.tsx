@@ -15,7 +15,7 @@ import {
   Users,
 } from "lucide-react";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { DialogHeader, DialogFooter } from "@/components/ui/dialog";
@@ -37,7 +37,7 @@ import $ from "jquery";
 import "datatables.net-dt";
 
 type EventStreamData = {
-  id: string;
+  id: number;
   title: string;
   organizer: string;
   engagement: string;
@@ -50,7 +50,7 @@ type EventStreamData = {
 
 const mockEventStreams: EventStreamData[] = [
   {
-    id: "1",
+    id: 1,
     title: "Sunday Service - Divine Grace",
     organizer: "Zonal Event",
     engagement: "1.2k Prayer Requests",
@@ -61,7 +61,7 @@ const mockEventStreams: EventStreamData[] = [
     image: "/images/friends-group3.jpg",
   },
   {
-    id: "2",
+    id: 2,
     title: "Midweek Fellowship",
     organizer: "Group 1",
     engagement: "850 Prayer Requests",
@@ -72,7 +72,7 @@ const mockEventStreams: EventStreamData[] = [
     image: "/images/friends-group2.jpg",
   },
   {
-    id: "3",
+    id: 3,
     title: "Youth Conference 2023",
     organizer: "Group 2",
     engagement: "5.5k Prayer Requests",
@@ -83,7 +83,7 @@ const mockEventStreams: EventStreamData[] = [
     image: "/images/friends-group.jpg",
   },
   {
-    id: "4",
+    id: 4,
     title: "Night of Wonders",
     organizer: "Zonal Event",
     engagement: "12 Prayer Requests",
@@ -104,7 +104,9 @@ const cards = [
 
 const Page = () => {
   const path = usePathname();
+  const router = useRouter();
   const [openCreateLink, setOpenCreateLink] = useState(false);
+
   return (
     <div className="flex min-h-screen px-7 py-10 w-full bg-white">
       <div className="flex flex-col w-full">
@@ -182,7 +184,10 @@ const Page = () => {
               </Card>
             ))}
           </div>
-          <LiveStreamTable data={mockEventStreams} />
+          <LiveStreamTable
+            data={mockEventStreams}
+            onViewAnalytics={(id) => router.push(`/live-stream/${id}`)}
+          />
         </div>
       </div>
 
@@ -247,7 +252,13 @@ const Page = () => {
 
 export default Page;
 
-export function LiveStreamTable({ data }: { data: EventStreamData[] }) {
+export function LiveStreamTable({
+  data,
+  onViewAnalytics,
+}: {
+  data: EventStreamData[];
+  onViewAnalytics: (id: number) => void;
+}) {
   const tableRef = useRef<HTMLTableElement | null>(null);
   const dtInstance = useRef<DataTables.Api | null>(null);
 
@@ -441,7 +452,10 @@ export function LiveStreamTable({ data }: { data: EventStreamData[] }) {
                         Select{" "}
                         {/* <Eye size={18} className="opacity-60 text-[#262626]" /> */}
                       </DropdownMenuItem>
-                      <DropdownMenuItem className="flex items-center justify-between px-3 py-3 rounded-lg text-sm text-[#262626] hover:bg-gray-100 hover:text-gray-900 outline-0 transition-all cursor-pointer">
+                      <DropdownMenuItem
+                        className="flex items-center justify-between px-3 py-3 rounded-lg text-sm text-[#262626] hover:bg-gray-100 hover:text-gray-900 outline-0 transition-all cursor-pointer"
+                        onClick={() => onViewAnalytics(stream.id)}
+                      >
                         View Analytics{" "}
                         <Eye size={18} className="opacity-60 text-[#262626]" />
                       </DropdownMenuItem>
